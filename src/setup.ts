@@ -11,7 +11,7 @@ const NAME = "reel-mesh";
 const PLUGIN_ID = `${NAME}@${NAME}`;
 const BLOCK_BEGIN = "<!-- reel-mesh:BEGIN -->";
 const BLOCK_END = "<!-- reel-mesh:END -->";
-const PLUGIN_PAYLOAD = [".claude-plugin", ".codex-plugin", "skills", "LICENSE", "README.md"];
+const PLUGIN_PAYLOAD = [".claude-plugin", ".codex-plugin", "skills", "LICENSE", "README.md", "README.ko.md"];
 // claude/codex plugin commands may clone or refresh a marketplace; past this they are treated as failed, not waited on.
 const CLIENT_TIMEOUT_MS = 120000;
 export const EXIT_SETUP_FAILED = 1;

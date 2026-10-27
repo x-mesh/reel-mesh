@@ -1,66 +1,68 @@
 # reel-mesh
 
-웹 프로젝트의 README에 넣을 시연 GIF를 시나리오 파일로 녹화합니다. 시나리오(YAML)에 클릭, 입력, 자막을 단계별로 적으면, reel-mesh가 브라우저를 띄워 단계마다 화면을 찍고 GIF로 합칩니다. 시나리오는 저장소에 남으므로 기능이 바뀌면 같은 명령으로 같은 길이의 영상을 다시 만들 수 있습니다.
+[한국어](README.ko.md) | English
 
-웹앱과 정적 HTML 페이지, Chrome 확장의 사이드 패널을 찍을 수 있습니다. 페이지와 패널처럼 두 화면을 나란히 붙여 한 영상으로 만들 수도 있습니다. 실제 포인터는 화면 캡처에 찍히지 않으므로, 가짜 포인터와 클릭 표시, 자막을 페이지 위에 그려서 함께 찍습니다.
+reel-mesh records demo GIFs for the README of a web project. You write a scenario file in YAML that lists clicks, typed text, and captions step by step. reel-mesh opens a browser, takes a screenshot at each step, and joins the screenshots into a GIF. The scenario stays in your repository. When a feature changes, the same command makes a new video with the same length.
 
-CLI와 함께 AI 코딩 에이전트용 skill이 들어 있습니다. 에이전트는 이 skill을 따라 프로젝트를 읽고 시연 후보를 제안한 뒤, 사용자가 고른 후보를 녹화하고 README에 넣습니다. Claude Code, Codex, Cursor, Kiro, Antigravity, OpenCode에 설치할 수 있습니다.
+reel-mesh can capture web apps, static HTML pages, and the side panel of a Chrome extension. It can also put two screens side by side in one video, for example a page and a panel. Screen capture does not show the real pointer. Thus reel-mesh draws a pointer, click marks, and captions on the page before each screenshot.
 
-## 설치
+The repository also contains a skill for AI coding agents. With the skill, an agent reads your project and suggests demo candidates. Then it records the candidate that you select and adds the GIF to the README. You can install the skill in Claude Code, Codex, Cursor, Kiro, Antigravity, and OpenCode.
 
-Node.js와 `ffmpeg`가 PATH에 있어야 합니다. Node.js는 TypeScript 파일을 빌드 없이 실행하며, v26.12.1과 `ffmpeg` 9.0.2에서 확인했습니다.
+## Install
+
+Node.js and `ffmpeg` must be on your PATH. Node.js runs the TypeScript files without a build step. The tests ran on Node.js v26.12.1 and `ffmpeg` 9.0.2.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/x-mesh/reel-mesh/main/scripts/install.sh | bash
 ```
 
-설치 스크립트는 다음 순서로 진행합니다.
+The install script does these steps:
 
-1. 저장소를 `~/.local/share/reel-mesh`에 받고 `npm ci --omit=dev`, `npx playwright install chromium`을 실행합니다.
-2. `~/.local/bin/reel-mesh` 명령을 만듭니다. 이 폴더가 PATH에 없으면 추가하라고 알려 줍니다.
-3. 이 컴퓨터에 있는 AI 코딩 도구를 찾아 보여 주고, 확인을 받은 뒤 skill을 등록합니다. 묻지 않고 등록하려면 `bash -s -- --yes`를 붙입니다.
+1. It downloads the repository to `~/.local/share/reel-mesh`. Then it runs `npm ci --omit=dev` and `npx playwright install chromium`.
+2. It makes the `~/.local/bin/reel-mesh` command. If that folder is not on your PATH, the script tells you to add it.
+3. It finds the AI coding tools on this computer and shows them. After you confirm, it registers the skill. To register without a prompt, add `bash -s -- --yes`.
 
-| 도구 | 찾는 기준 | 등록하는 곳 |
+| Tool | Detected by | Installs to |
 |---|---|---|
-| Claude Code | `claude` 명령 | `~/plugins/reel-mesh`를 로컬 마켓플레이스로 추가하고 `claude plugin install reel-mesh@reel-mesh -s user` |
-| Codex | `codex` 명령 | `~/plugins/reel-mesh`를 `~/.agents/plugins/marketplace.json`에 추가하고 `codex plugin add reel-mesh@<마켓플레이스 이름>` |
+| Claude Code | `claude` command | Adds `~/plugins/reel-mesh` as a local marketplace and runs `claude plugin install reel-mesh@reel-mesh -s user` |
+| Codex | `codex` command | Adds `~/plugins/reel-mesh` to `~/.agents/plugins/marketplace.json` and runs `codex plugin add reel-mesh@<marketplace name>` |
 | Cursor | `~/.cursor` | `~/.cursor/skills/reel-mesh/` |
 | Kiro | `~/.kiro` | `~/.kiro/steering/reel-mesh*.md` |
-| Antigravity | `~/.gemini` | `~/.gemini/antigravity/skills/reel-mesh.md`, `~/.gemini/AGENTS.md`의 reel-mesh 블록 |
-| OpenCode | `~/.config/opencode` 또는 `opencode` 명령 | `~/.config/opencode/skills/reel-mesh/SKILL.md` |
+| Antigravity | `~/.gemini` | `~/.gemini/antigravity/skills/reel-mesh.md` and a reel-mesh block in `~/.gemini/AGENTS.md` |
+| OpenCode | `~/.config/opencode` or the `opencode` command | `~/.config/opencode/skills/reel-mesh/SKILL.md` |
 
-등록한 뒤에는 각 도구에서 새 세션을 시작해야 skill이 로드됩니다.
+After the registration, start a new session in each tool to load the skill.
 
-등록 대상을 직접 고르거나 나중에 다시 등록할 때는 설치된 CLI를 씁니다. 이 도구가 만들지 않은 파일이 이미 있으면 덮어쓰지 않고, `--force`를 붙여야 덮어씁니다.
+To select the tools yourself, or to register the skill again later, use the installed CLI. The CLI does not overwrite a file that it did not create. Add `--force` to overwrite such a file.
 
 ```bash
-reel-mesh setup install --targets codex,cursor --yes   # --targets 없이 실행하면 찾은 도구 전부
+reel-mesh setup install --targets codex,cursor --yes   # without --targets: all detected tools
 reel-mesh setup status
 reel-mesh setup uninstall --yes
 ```
 
-전부 지우려면 설치 스크립트에 `uninstall`을 붙입니다. 등록한 skill, `reel-mesh` 명령, `~/.local/share/reel-mesh`를 지웁니다.
+To remove everything, run the install script with `uninstall`. It removes the registered skill, the `reel-mesh` command, and `~/.local/share/reel-mesh`.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/x-mesh/reel-mesh/main/scripts/install.sh | bash -s -- uninstall
 ```
 
-Claude Code만 쓴다면 플러그인으로 skill만 설치할 수도 있습니다. 이때도 녹화하려면 `reel-mesh` 명령이 있어야 하므로 위 설치 스크립트를 실행해야 합니다.
+If you use only Claude Code, you can install the skill as a plugin. The skill still needs the `reel-mesh` command to record, so run the install script too.
 
 ```text
 /plugin install reel-mesh --marketplace x-mesh/reel-mesh
 ```
 
-## 처음 써 보기
+## First run
 
-설치된 폴더에 들어 있는 시험용 앱으로 녹화부터 GIF까지 실행해 봅니다. 시험용 앱 서버를 다른 터미널에서 띄웁니다.
+The installed folder contains a test app. Use it to make your first GIF. Start the test app server in a second terminal.
 
 ```bash
 cd ~/.local/share/reel-mesh
 node examples/fixture-app/serve.ts --port 5173
 ```
 
-같은 폴더에서 다음 명령을 차례로 실행합니다.
+Run these commands in the same folder, in this order.
 
 ```bash
 cd ~/.local/share/reel-mesh
@@ -70,16 +72,16 @@ reel-mesh review examples/scenarios/fixture-app.yaml
 reel-mesh render examples/scenarios/fixture-app.yaml
 ```
 
-산출물은 명령을 실행한 폴더의 `.reel/fixture-app/` 아래에 생깁니다.
+The commands write their output to `.reel/fixture-app/` in the current folder.
 
-- `frames/`, `frames.json`: 단계별 프레임과 프레임마다 보여 줄 시간
-- `run.log`: 단계 이름, 시각, 찍은 프레임 수
-- `review/contact-sheet.png`, `review/step-<n>.png`: 검토용 장면 모음과 단계별 마지막 프레임
-- `fixture-app.gif`: 결과 GIF
+- `frames/`, `frames.json`: the frames of each step and the display time of each frame
+- `run.log`: step names, times, and frame counts
+- `review/contact-sheet.png`, `review/step-<n>.png`: a contact sheet for review and the last frame of each step
+- `fixture-app.gif`: the GIF
 
-페이지와 확장 사이드 패널을 함께 찍는 예시는 `examples/scenarios/fixture-ext.yaml`입니다. 같은 서버를 띄운 상태에서 위 명령의 시나리오 경로만 바꿔 실행하면 1402×760 GIF가 나옵니다.
+`examples/scenarios/fixture-ext.yaml` captures a page and an extension side panel together. Keep the same server and change only the scenario path in the commands above. The result is a 1402×760 GIF.
 
-## 시나리오
+## Scenario
 
 ```yaml
 name: my-demo
@@ -96,55 +98,66 @@ steps:
   - wait: 800
 ```
 
-대상은 좌표가 아니라 CSS selector나 문구로 지정하고, 좌표는 녹화 중에 계산합니다. 그래서 화면 크기를 바꿔도 시나리오를 고치지 않아도 됩니다. 동작 단계에 `expect`를 붙이면 기대 상태가 맞을 때까지 그 동작을 `retry`만큼 다시 실행하고, 그래도 맞지 않으면 녹화를 실패로 끝냅니다. 틀린 화면을 그대로 GIF에 남기지 않기 위해서입니다.
+A target is a CSS selector or a text, not a coordinate. reel-mesh calculates the coordinates while `record` runs. Thus a new screen size does not require a change to the scenario.
 
-영상 속도는 실제 캡처 시간이 아니라 시나리오의 시간 값으로 정해집니다. 같은 시나리오를 두 번 녹화하면 프레임 수와 길이가 같습니다.
+Add `expect` to an action step to set the expected state. If the page does not match it, reel-mesh runs the action again, up to `retry` times. If the page still does not match, `record` stops with an error. A wrong screen never goes into the GIF.
 
-필드 전체와 기본값은 [skills/reel-mesh/references/scenario-format.md](skills/reel-mesh/references/scenario-format.md)에 있습니다.
+The time values in the scenario set the speed of the video. The real capture time has no effect. Two runs of `record` on the same scenario give the same frame count and the same length.
 
-## 명령
+For all fields and their defaults, see [skills/reel-mesh/references/scenario-format.md](skills/reel-mesh/references/scenario-format.md) (Korean).
 
-| 명령 | 하는 일 |
+## Commands
+
+| Command | What it does |
 |---|---|
-| `validate <scenario>` | 시나리오 문법을 확인합니다. 브라우저를 띄우지 않습니다. |
-| `check <scenario> [--adapter]` | ffmpeg, 개발 서버, 브라우저, 확장, 첫 대상 요소를 점검합니다. 실패하면 할 일을 한 줄로 알려 줍니다. |
-| `record <scenario> [--adapter]` | 사전 점검을 통과하면 단계마다 모든 화면을 찍습니다. |
-| `restore <scenario> [--adapter]` | 녹화가 남긴 저장값 스냅숏으로 브라우저 상태를 되돌립니다. |
-| `review <scenario>` | 장면 모음과 단계별 마지막 프레임을 만듭니다. |
-| `render <scenario> [--width <px>] [--colors <n>] [--budget-mb <n>] [--mp4 [path]]` | GIF를 만들고, 선택하면 MP4도 만듭니다. 크기 예산을 넘으면 폭과 색 수를 줄인 명령을 제안합니다. |
-| `audit <scenario> --deny-file <path>` | 시나리오와 산출물 텍스트에 금지 문자열이 있는지 검사합니다. |
+| `validate <scenario>` | Checks the scenario syntax. It does not open a browser. |
+| `check <scenario> [--adapter]` | Checks ffmpeg, the dev server, the browser, the extension, and the first target element. If a check fails, it shows the next action in one line. |
+| `record <scenario> [--adapter]` | Runs the checks. If they pass, it captures every screen at each step. |
+| `restore <scenario> [--adapter]` | Puts back the browser state from the snapshot that `record` left. |
+| `review <scenario>` | Makes a contact sheet and the last frame of each step. |
+| `render <scenario> [--width <px>] [--colors <n>] [--budget-mb <n>] [--mp4 [path]]` | Makes a GIF, and an MP4 if you ask for it. If the GIF is larger than the size budget, it suggests a command with a smaller width and fewer colors. |
+| `audit <scenario> --deny-file <path>` | Searches the scenario and the output text files for denied strings. |
 
-모든 명령은 `reel-mesh <명령>` 형태로 실행합니다. 인자 없이 실행하면 usage가 나옵니다. skill 등록은 `reel-mesh setup`이 맡습니다(설치 절 참고).
+Run each command as `reel-mesh <command>`. Run a command without arguments to see its usage. `reel-mesh setup` registers the skill (see [Install](#install)).
 
-exit code는 1 실행 실패, 2 시나리오나 인자 오류, 3 사전 점검 실패, 4 복원 뒤 저장값 불일치, 5 이전 녹화의 스냅숏이 남아 있음, 6 금지 문자열 발견입니다.
+| Exit code | Description |
+|---|---|
+| 1 | The run failed. |
+| 2 | The scenario or an argument is not valid. |
+| 3 | A check before the record step failed. |
+| 4 | After the restore, the stored values differ from the values before `record`. |
+| 5 | A snapshot from a previous run remains. |
+| 6 | The audit found a denied string. |
 
-## 브라우저 상태 보관과 복원
+## Browser state
 
-시나리오의 `state`에 `localStorage`나 확장 `chrome.storage` 키를 적으면, `record`가 녹화 전에 그 값을 `.reel/<name>/state-snapshot.json`에 보관하고 지운 뒤 깨끗한 상태로 녹화합니다. 녹화가 오류로 끝나도 보관한 값을 되돌리고, 되돌린 값이 녹화 전과 같은지 비교해 `state-restore.json`에 씁니다. 프로세스가 강제로 종료되어 스냅숏이 남으면, 다음 `record`는 녹화하지 않고 `restore` 명령을 안내합니다.
+You can list `localStorage` keys or extension `chrome.storage` keys in the `state` field of a scenario. Before it captures the first frame, `record` saves their values to `.reel/<name>/state-snapshot.json` and clears them. Thus each run starts from a clean state.
 
-## 브라우저 어댑터
+After the run, `record` puts the saved values back, also when the run fails. It compares them with the values from before the run and writes the result to `state-restore.json`. If the process stops by force and the snapshot remains, the next `record` does not start. It tells you to run `restore`.
 
-- `playwright`(기본): 임시 프로필로 새 Chromium을 띄우므로 사용자의 브라우저를 건드리지 않습니다. 확장 화면도 지원합니다.
-- `ego-browser`: 사용자가 쓰는 브라우저를 직접 조작합니다. 확장 화면은 지원하지 않습니다. 가짜 실행 파일로만 시험했고, 실제 ego-browser에서는 아직 확인하지 않았습니다. 확인할 항목과 명령은 [docs/spike-notes.md](docs/spike-notes.md)에 있습니다.
+## Browser adapters
 
-스냅숏은 녹화한 어댑터로만 복원할 수 있습니다. 다른 어댑터로 `restore`를 실행하면 exit 2로 거부하고 맞는 명령을 출력합니다.
+- `playwright` (default): starts a new Chromium with a temporary profile. It does not touch your browser. It supports extension screens.
+- `ego-browser`: controls the browser that you use. It does not support extension screens. Only a fake executable tested this adapter, so its behavior with the real ego-browser is not known. [docs/spike-notes.md](docs/spike-notes.md) (Korean) lists the items to check and the commands.
 
-## AI 에이전트 skill
+Only the adapter that made a snapshot can restore it. If you run `restore` with another adapter, it exits with code 2 and shows the correct command.
 
-[skills/reel-mesh/SKILL.md](skills/reel-mesh/SKILL.md)는 에이전트가 따르는 절차입니다. 시연 후보를 고르고, 시나리오를 쓰고, 녹화하고, 검토하고, GIF로 변환한 뒤 README에 넣습니다. 사용자에게는 두 번 묻습니다. 어떤 후보를 녹화할지, 그리고 README에 넣기 전에 결과 GIF가 괜찮은지입니다.
+## AI agent skill
 
-에이전트는 대상 프로젝트의 루트에서 `reel-mesh` 명령을 실행합니다. 그래서 `.reel/`은 대상 프로젝트에 생기고, skill은 그 프로젝트의 `.gitignore`에 `.reel/`을 넣도록 안내합니다. `reel-mesh` 명령이 없으면 녹화하지 않고 설치 명령을 안내합니다.
+[skills/reel-mesh/SKILL.md](skills/reel-mesh/SKILL.md) is the procedure for the agent. The skill text is in Korean. The agent selects demo candidates, writes a scenario, records it, reviews the frames, makes a GIF, and adds the GIF to the README. It asks you two questions. The first question is which candidate to record. The second question is whether the GIF is acceptable before it goes into the README.
 
-## 한계
+The agent runs `reel-mesh` from the root of the target project, so `.reel/` is in that project. The skill tells the agent to add `.reel/` to the `.gitignore` of that project. If the `reel-mesh` command is not available, the agent does not record. It shows the install command.
 
-- 소리, OS 화면 녹화, 브라우저 밖 데스크톱 앱, 영상 편집은 지원하지 않습니다.
-- `audit`은 이미지 속 글자를 검사하지 않습니다. 화면에 보이는 개인정보는 시나리오의 `mask`로 가리고, 검토 단계에서 이미지를 직접 확인해야 합니다.
-- `mask`는 최상위 문서의 요소만 찾습니다. iframe이나 shadow DOM 안의 요소는 가리지 못합니다.
-- 확장은 background service worker가 있어야 이름으로 찾을 수 있습니다.
+## Limitations
 
-## 개발
+- reel-mesh does not record sound, the OS screen, desktop apps outside the browser, or video edits.
+- `audit` does not read text in images. Hide personal data on the screen with `mask` in the scenario, and examine the images during the review.
+- `mask` finds elements only in the top-level document. It cannot hide elements in an iframe or a shadow DOM.
+- To find an extension by its name, the extension must have a background service worker.
 
-저장소에서 직접 실행할 때는 의존성을 받은 뒤 `node bin/reel-mesh.ts <명령>`으로 실행합니다. `scripts/install.sh`를 저장소 안에서 실행하면 GitHub 대신 그 저장소를 설치합니다.
+## Development
+
+To run reel-mesh from the repository, install the dependencies and run `node bin/reel-mesh.ts <command>`. If you run `scripts/install.sh` from the repository, it installs that checkout instead of the GitHub version.
 
 ```bash
 npm i
@@ -153,8 +166,8 @@ npm test
 npm run typecheck
 ```
 
-`npm test`는 브라우저를 띄우는 시험을 포함해 순서대로 실행하며, 약 2분이 걸립니다.
+`npm test` runs the tests in order, with the browser tests. It takes about 2 minutes.
 
-## 라이선스
+## License
 
 [MIT](LICENSE)
