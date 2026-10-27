@@ -1,0 +1,21 @@
+name: fixture-ext
+caption:
+  lang: en
+  position: { page: bottom }
+screens:
+  - id: page
+    url: http://127.0.0.1:5173/
+    size: [1040, 760]
+  - id: panel
+    extension: { name: reel-mesh-fixture-ext, path: ../fixture-ext, pinTo: page }
+    size: [360, 760]
+layout: { direction: horizontal, border: 2 }
+state:
+  chromeStorage: ["dock*"]
+timing: { stepTimeoutMs: 30000, pointerSteps: 12, pointerStepMs: 33 }
+steps:
+  - caption: "Open the panel"
+  - click: { screen: panel, target: "#dock-button" }
+    expect: { screen: panel, selector: "[data-dock='210']" }
+    retry: 2
+  - wait: 400

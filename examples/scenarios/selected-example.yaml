@@ -1,0 +1,23 @@
+name: selected-example
+caption:
+  lang: en
+  position: { page: bottom }
+screens:
+  - id: page
+    url: http://127.0.0.1:5173/
+    size: [800, 600]
+layout: { direction: horizontal, border: 2 }
+state:
+  localStorage: ["fixture:*"]
+  restoreViaBlankOrigin: true
+  blankPath: /blank.html
+steps:
+  - caption: "Open the app"
+  - wait: 600
+  - caption: "Select the title"
+  - click: { screen: page, target: "h1" }
+    expect: { screen: page, selector: "h1" }
+    retry: 2
+  - caption: "Double-click the button"
+  - dblclick: { screen: page, target: { text: "Click me" } }
+  - wait: 800

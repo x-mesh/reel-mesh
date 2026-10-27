@@ -1,0 +1,20 @@
+name: fixture-app-fail
+caption:
+  lang: en
+  position: { page: bottom }
+screens:
+  - id: page
+    url: http://127.0.0.1:5173/
+    size: [800, 600]
+layout: { direction: horizontal, border: 2 }
+state:
+  localStorage: ["fixture:*"]
+  restoreViaBlankOrigin: true
+  blankPath: /blank.html
+timing: { stepTimeoutMs: 30000, pointerSteps: 12, pointerStepMs: 33 }
+steps:
+  - expect: { screen: page, selector: '#log[data-log-count="0"]' }
+  - click: { screen: page, target: "#dock-button" }
+  - click: { screen: page, target: "#log-button" }
+    expect: { screen: page, selector: '#log[data-log-count="1"]' }
+  - script: scripts/throw.js

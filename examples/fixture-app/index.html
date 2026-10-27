@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>fixture-app</title>
+<style>
+  body { margin: 0; font-family: sans-serif; }
+  iframe { width: 400px; height: 120px; border: 1px solid #888; transform: scale(0.5); transform-origin: 0 0; }
+  #scroller { width: 300px; height: 80px; overflow: auto; border: 1px solid #888; }
+  #scroller li { height: 40px; }
+</style>
+</head>
+<body>
+<h1 id="title">Fixture App</h1>
+<button id="main-button">Click me</button>
+<div id="frame-wrap" style="width:200px;height:60px"><iframe id="frame" srcdoc="<button id='frame-button'>In frame</button>"></iframe></div>
+<div id="shadow-host"></div>
+<ul id="scroller"></ul>
+<input name="prompt" type="text">
+<button id="dock-button">Dock 210</button>
+<button id="log-button">Add log</button>
+<ul id="log" data-log-count="0"></ul>
+<script src="app.js"></script>
+</body>
+</html>
