@@ -4,6 +4,7 @@ import { openRunLog } from "../src/runlog.ts";
 import { runRecord } from "../src/recorder.ts";
 import { runRestore } from "../src/state.ts";
 import { runAudit } from "../src/audit.ts";
+import { runSetup } from "../src/setup.ts";
 import { EgoBrowserAdapter } from "../src/browser/ego-browser.ts";
 import { PlaywrightAdapter } from "../src/browser/playwright.ts";
 import type { AdapterFactory } from "../src/browser/adapter.ts";
@@ -233,6 +234,7 @@ const commands: Record<string, (args: string[]) => number | Promise<number>> = {
   review: ([file]) => review(file),
   render: (rest) => render(rest),
   audit: (rest) => audit(rest),
+  setup: (rest) => runSetup(rest),
 };
 
 const run = command === undefined ? undefined : commands[command];

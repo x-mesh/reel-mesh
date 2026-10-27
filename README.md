@@ -4,33 +4,70 @@
 
 웹앱과 정적 HTML 페이지, Chrome 확장의 사이드 패널을 찍을 수 있습니다. 페이지와 패널처럼 두 화면을 나란히 붙여 한 영상으로 만들 수도 있습니다. 실제 포인터는 화면 캡처에 찍히지 않으므로, 가짜 포인터와 클릭 표시, 자막을 페이지 위에 그려서 함께 찍습니다.
 
-CLI와 함께 AI 코딩 에이전트용 skill(`skill/`)이 들어 있습니다. 에이전트는 이 skill을 따라 프로젝트를 읽고 시연 후보를 제안한 뒤, 사용자가 고른 후보를 녹화하고 README에 넣습니다.
+CLI와 함께 AI 코딩 에이전트용 skill이 들어 있습니다. 에이전트는 이 skill을 따라 프로젝트를 읽고 시연 후보를 제안한 뒤, 사용자가 고른 후보를 녹화하고 README에 넣습니다. Claude Code, Codex, Cursor, Kiro, Antigravity, OpenCode에 설치할 수 있습니다.
 
-## 준비
+## 설치
 
-- Node.js: TypeScript 파일을 빌드 없이 실행합니다. v26.12.1에서 확인했습니다.
-- `ffmpeg`: PATH에 있어야 합니다. 9.0.2에서 확인했습니다.
+Node.js와 `ffmpeg`가 PATH에 있어야 합니다. Node.js는 TypeScript 파일을 빌드 없이 실행하며, v26.12.1과 `ffmpeg` 9.0.2에서 확인했습니다.
 
 ```bash
-npm i
-npx playwright install chromium
+curl -fsSL https://raw.githubusercontent.com/x-mesh/reel-mesh/main/scripts/install.sh | bash
+```
+
+설치 스크립트는 다음 순서로 진행합니다.
+
+1. 저장소를 `~/.local/share/reel-mesh`에 받고 `npm ci --omit=dev`, `npx playwright install chromium`을 실행합니다.
+2. `~/.local/bin/reel-mesh` 명령을 만듭니다. 이 폴더가 PATH에 없으면 추가하라고 알려 줍니다.
+3. 이 컴퓨터에 있는 AI 코딩 도구를 찾아 보여 주고, 확인을 받은 뒤 skill을 등록합니다. 묻지 않고 등록하려면 `bash -s -- --yes`를 붙입니다.
+
+| 도구 | 찾는 기준 | 등록하는 곳 |
+|---|---|---|
+| Claude Code | `claude` 명령 | `~/plugins/reel-mesh`를 로컬 마켓플레이스로 추가하고 `claude plugin install reel-mesh@reel-mesh -s user` |
+| Codex | `codex` 명령 | `~/plugins/reel-mesh`를 `~/.agents/plugins/marketplace.json`에 추가하고 `codex plugin add reel-mesh@<마켓플레이스 이름>` |
+| Cursor | `~/.cursor` | `~/.cursor/skills/reel-mesh/` |
+| Kiro | `~/.kiro` | `~/.kiro/steering/reel-mesh*.md` |
+| Antigravity | `~/.gemini` | `~/.gemini/antigravity/skills/reel-mesh.md`, `~/.gemini/AGENTS.md`의 reel-mesh 블록 |
+| OpenCode | `~/.config/opencode` 또는 `opencode` 명령 | `~/.config/opencode/skills/reel-mesh/SKILL.md` |
+
+등록한 뒤에는 각 도구에서 새 세션을 시작해야 skill이 로드됩니다.
+
+등록 대상을 직접 고르거나 나중에 다시 등록할 때는 설치된 CLI를 씁니다. 이 도구가 만들지 않은 파일이 이미 있으면 덮어쓰지 않고, `--force`를 붙여야 덮어씁니다.
+
+```bash
+reel-mesh setup install --targets codex,cursor --yes   # --targets 없이 실행하면 찾은 도구 전부
+reel-mesh setup status
+reel-mesh setup uninstall --yes
+```
+
+전부 지우려면 설치 스크립트에 `uninstall`을 붙입니다. 등록한 skill, `reel-mesh` 명령, `~/.local/share/reel-mesh`를 지웁니다.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/x-mesh/reel-mesh/main/scripts/install.sh | bash -s -- uninstall
+```
+
+Claude Code만 쓴다면 플러그인으로 skill만 설치할 수도 있습니다. 이때도 녹화하려면 `reel-mesh` 명령이 있어야 하므로 위 설치 스크립트를 실행해야 합니다.
+
+```text
+/plugin install reel-mesh --marketplace x-mesh/reel-mesh
 ```
 
 ## 처음 써 보기
 
-저장소에 들어 있는 시험용 앱으로 녹화부터 GIF까지 실행해 봅니다. 시험용 앱 서버를 다른 터미널에서 띄웁니다.
+설치된 폴더에 들어 있는 시험용 앱으로 녹화부터 GIF까지 실행해 봅니다. 시험용 앱 서버를 다른 터미널에서 띄웁니다.
 
 ```bash
+cd ~/.local/share/reel-mesh
 node examples/fixture-app/serve.ts --port 5173
 ```
 
-저장소 루트에서 다음 명령을 차례로 실행합니다.
+같은 폴더에서 다음 명령을 차례로 실행합니다.
 
 ```bash
-node bin/reel-mesh.ts check examples/scenarios/fixture-app.yaml
-node bin/reel-mesh.ts record examples/scenarios/fixture-app.yaml
-node bin/reel-mesh.ts review examples/scenarios/fixture-app.yaml
-node bin/reel-mesh.ts render examples/scenarios/fixture-app.yaml
+cd ~/.local/share/reel-mesh
+reel-mesh check examples/scenarios/fixture-app.yaml
+reel-mesh record examples/scenarios/fixture-app.yaml
+reel-mesh review examples/scenarios/fixture-app.yaml
+reel-mesh render examples/scenarios/fixture-app.yaml
 ```
 
 산출물은 명령을 실행한 폴더의 `.reel/fixture-app/` 아래에 생깁니다.
@@ -63,7 +100,7 @@ steps:
 
 영상 속도는 실제 캡처 시간이 아니라 시나리오의 시간 값으로 정해집니다. 같은 시나리오를 두 번 녹화하면 프레임 수와 길이가 같습니다.
 
-필드 전체와 기본값은 [skill/references/scenario-format.md](skill/references/scenario-format.md)에 있습니다.
+필드 전체와 기본값은 [skills/reel-mesh/references/scenario-format.md](skills/reel-mesh/references/scenario-format.md)에 있습니다.
 
 ## 명령
 
@@ -77,7 +114,7 @@ steps:
 | `render <scenario> [--width <px>] [--colors <n>] [--budget-mb <n>] [--mp4 [path]]` | GIF를 만들고, 선택하면 MP4도 만듭니다. 크기 예산을 넘으면 폭과 색 수를 줄인 명령을 제안합니다. |
 | `audit <scenario> --deny-file <path>` | 시나리오와 산출물 텍스트에 금지 문자열이 있는지 검사합니다. |
 
-모든 명령은 `node bin/reel-mesh.ts <명령>` 형태로 실행합니다. 인자 없이 실행하면 usage가 나옵니다.
+모든 명령은 `reel-mesh <명령>` 형태로 실행합니다. 인자 없이 실행하면 usage가 나옵니다. skill 등록은 `reel-mesh setup`이 맡습니다(설치 절 참고).
 
 exit code는 1 실행 실패, 2 시나리오나 인자 오류, 3 사전 점검 실패, 4 복원 뒤 저장값 불일치, 5 이전 녹화의 스냅숏이 남아 있음, 6 금지 문자열 발견입니다.
 
@@ -94,15 +131,9 @@ exit code는 1 실행 실패, 2 시나리오나 인자 오류, 3 사전 점검 �
 
 ## AI 에이전트 skill
 
-[skill/SKILL.md](skill/SKILL.md)는 에이전트가 따르는 절차입니다. 시연 후보를 고르고, 시나리오를 쓰고, 녹화하고, 검토하고, GIF로 변환한 뒤 README에 넣습니다. 사용자에게는 두 번 묻습니다. 어떤 후보를 녹화할지, 그리고 README에 넣기 전에 결과 GIF가 괜찮은지입니다.
+[skills/reel-mesh/SKILL.md](skills/reel-mesh/SKILL.md)는 에이전트가 따르는 절차입니다. 시연 후보를 고르고, 시나리오를 쓰고, 녹화하고, 검토하고, GIF로 변환한 뒤 README에 넣습니다. 사용자에게는 두 번 묻습니다. 어떤 후보를 녹화할지, 그리고 README에 넣기 전에 결과 GIF가 괜찮은지입니다.
 
-에이전트는 대상 프로젝트의 루트에서 이 저장소의 `bin/reel-mesh.ts`를 절대 경로로 실행합니다. 그래서 `.reel/`은 대상 프로젝트에 생기고, skill은 그 프로젝트의 `.gitignore`에 `.reel/`을 넣도록 안내합니다.
-
-Claude Code에서 쓰려면 skill 폴더를 개인 skill 경로에 연결합니다.
-
-```bash
-ln -s "$PWD/skill" ~/.claude/skills/reel-mesh
-```
+에이전트는 대상 프로젝트의 루트에서 `reel-mesh` 명령을 실행합니다. 그래서 `.reel/`은 대상 프로젝트에 생기고, skill은 그 프로젝트의 `.gitignore`에 `.reel/`을 넣도록 안내합니다. `reel-mesh` 명령이 없으면 녹화하지 않고 설치 명령을 안내합니다.
 
 ## 한계
 
@@ -113,12 +144,16 @@ ln -s "$PWD/skill" ~/.claude/skills/reel-mesh
 
 ## 개발
 
+저장소에서 직접 실행할 때는 의존성을 받은 뒤 `node bin/reel-mesh.ts <명령>`으로 실행합니다. `scripts/install.sh`를 저장소 안에서 실행하면 GitHub 대신 그 저장소를 설치합니다.
+
 ```bash
+npm i
+npx playwright install chromium
 npm test
 npm run typecheck
 ```
 
-`npm test`는 브라우저를 띄우는 시험을 포함해 순서대로 실행하며, 약 2분 20초가 걸립니다.
+`npm test`는 브라우저를 띄우는 시험을 포함해 순서대로 실행하며, 약 2분이 걸립니다.
 
 ## 라이선스
 

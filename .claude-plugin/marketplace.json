@@ -1,0 +1,23 @@
+{
+  "name": "reel-mesh",
+  "metadata": {
+    "description": "Record README demo GIFs for web projects from scenario files, with an agent skill that picks what to show and inserts the result."
+  },
+  "owner": {
+    "name": "x-mesh"
+  },
+  "plugins": [
+    {
+      "name": "reel-mesh",
+      "description": "Record README demo GIFs for web projects from scenario files, with an agent skill that picks what to show and inserts the result.",
+      "version": "0.1.0",
+      "author": {
+        "name": "x-mesh"
+      },
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/x-mesh/reel-mesh",
+      "tags": ["demo", "gif", "readme", "playwright", "recording"]
+    }
+  ]
+}

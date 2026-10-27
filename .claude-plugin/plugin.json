@@ -1,0 +1,13 @@
+{
+  "name": "reel-mesh",
+  "version": "0.1.0",
+  "description": "Record README demo GIFs for web projects from scenario files, with an agent skill that picks what to show and inserts the result.",
+  "author": {
+    "name": "x-mesh"
+  },
+  "repository": "https://github.com/x-mesh/reel-mesh",
+  "homepage": "https://github.com/x-mesh/reel-mesh",
+  "license": "MIT",
+  "keywords": ["demo", "gif", "readme", "playwright", "recording"],
+  "skills": "./skills/"
+}

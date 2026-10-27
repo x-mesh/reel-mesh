@@ -1,0 +1,26 @@
+{
+  "name": "reel-mesh",
+  "version": "0.1.0",
+  "description": "Record README demo GIFs for web projects from scenario files, with an agent skill that picks what to show and inserts the result.",
+  "author": {
+    "name": "x-mesh"
+  },
+  "homepage": "https://github.com/x-mesh/reel-mesh",
+  "repository": "https://github.com/x-mesh/reel-mesh",
+  "license": "MIT",
+  "keywords": ["demo", "gif", "readme", "playwright", "recording"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "reel-mesh",
+    "shortDescription": "Record README demo GIFs from scenario files.",
+    "longDescription": "Pick what to demo, write a scenario, record it step by step in a browser, review the frames, render a GIF, and insert it into the README.",
+    "developerName": "x-mesh",
+    "category": "Developer Tools",
+    "capabilities": ["Interactive", "Write"],
+    "websiteURL": "https://github.com/x-mesh/reel-mesh",
+    "defaultPrompt": [
+      "$reel-mesh:reel-mesh make a demo GIF for the README",
+      "$reel-mesh:reel-mesh re-record the README demo GIF"
+    ]
+  }
+}

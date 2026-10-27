@@ -1,0 +1,6 @@
+interface:
+  display_name: "reel-mesh"
+  short_description: "Record README demo GIFs from scenario files."
+  default_prompt: "Use $reel-mesh:reel-mesh to make a demo GIF for the README."
+policy:
+  allow_implicit_invocation: true

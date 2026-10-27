@@ -86,7 +86,7 @@
 사용자가 후보를 고르면 그 후보를 시나리오 파일로 쓰고 `validate`만 실행한다.
 
 ```bash
-node "$REEL/bin/reel-mesh.ts" validate demo/<name>.yaml
+reel-mesh validate demo/<name>.yaml
 ```
 
 exit 0이 나오면 선정이 끝난다. 다음은 `SKILL.md`의 사전 점검 단계다. 시나리오 필드는 `scenario-format.md`를 따른다.

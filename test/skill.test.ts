@@ -6,12 +6,12 @@ import { fileURLToPath } from "node:url";
 import { loadScenario, parseScenario } from "../src/scenario.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const skillDir = join(root, "skill");
+const skillDir = join(root, "skills", "reel-mesh");
 const scenariosDir = join(root, "examples", "scenarios");
 const docFiles = ["SKILL.md", "references/selection.md", "references/scenario-format.md", "references/review-checklist.md"];
 const read = (rel: string) => readFileSync(join(skillDir, rel), "utf8");
 const allDocs = docFiles.map((f) => ({ file: f, text: read(f) }));
-const CLI_CALL = /node\s+"?\S*bin\/reel-mesh\.ts"?\s+([a-z-]+)/g;
+const CLI_CALL = /(?:^|[\s`])reel-mesh\s+([a-z-]+)\s/gm;
 const CLI_COMMANDS = ["validate", "check", "record", "restore", "review", "render", "audit"];
 
 test("SKILL.md frontmatter has name and trigger phrases", () => {
@@ -30,11 +30,12 @@ test("SKILL.md has the required sections and rules", () => {
     "## 행동 규칙",
     "## README 삽입",
     "## 한계",
-    "npm i",
+    "npm ci",
     "npx playwright install chromium",
     ".gitignore",
     "`.reel/`",
-    "../bin/reel-mesh.ts",
+    "command -v reel-mesh",
+    "scripts/install.sh",
     "사용자 확인 1",
     "사용자 확인 2",
     "| head",

@@ -5,16 +5,22 @@ description: 웹 프로젝트(웹앱, Chrome 확장, 정적 HTML)의 README 시�
 
 # reel-mesh
 
-시연 GIF를 시나리오 파일(YAML)로 정의하고, 같은 명령으로 몇 번이든 같은 결과로 다시 만든다. 이 skill은 사용자의 웹 프로젝트에서 쓰이고, CLI는 reel-mesh 저장소에 있다.
+시연 GIF를 시나리오 파일(YAML)로 정의하고, 같은 명령으로 몇 번이든 같은 결과로 다시 만든다. 이 skill은 사용자의 웹 프로젝트에서 쓰이고, CLI는 설치 스크립트가 PATH에 둔다.
 
 ## CLI 실행 방법
 
-1. reel-mesh 저장소에서 한 번만 준비한다: `npm i`, `npx playwright install chromium`. `ffmpeg`도 PATH에 있어야 한다.
-2. 이 skill 폴더 기준 CLI 위치는 `../bin/reel-mesh.ts`다. 절대 경로를 `REEL`에 정한다. 예: `REEL=/path/to/reel-mesh`.
-3. 명령은 대상 프로젝트의 루트에서 실행한다. 산출물 `.reel/`이 그 프로젝트에 생기기 때문이다.
+이 skill은 PATH에 설치된 `reel-mesh` 명령을 쓴다.
+
+1. `command -v reel-mesh`로 설치 여부를 확인한다. 없으면 녹화를 진행하지 않고, 사용자에게 아래 설치 명령을 안내한다. 이 명령은 `npm ci`로 의존성을 받고 `npx playwright install chromium`으로 브라우저를 받는다. `ffmpeg`는 미리 PATH에 있어야 한다.
+
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/x-mesh/reel-mesh/main/scripts/install.sh | bash
+   ```
+
+2. 명령은 대상 프로젝트의 루트에서 실행한다. 산출물 `.reel/`이 그 프로젝트에 생기기 때문이다.
 
 ```bash
-node "$REEL/bin/reel-mesh.ts" <command> ...
+reel-mesh <command> ...
 ```
 
 명령은 `validate`, `check`, `record`, `restore`, `review`, `render`, `audit` 일곱 개다. 옵션은 인자 없이 실행하면 나오는 usage로 확인한다. 상세 필드는 `references/scenario-format.md`에 있다.
@@ -60,7 +66,7 @@ exit code: 1 실행 실패, 2 시나리오 오류나 usage 오류, 3 사전 점�
 
   ```bash
   mkdir -p .reel
-  node "$REEL/bin/reel-mesh.ts" record demo/app.yaml > .reel/record.out 2>&1; echo "exit=$?"
+  reel-mesh record demo/app.yaml > .reel/record.out 2>&1; echo "exit=$?"
   ```
 
 - 시나리오를 고친 뒤에는 파일에 반영됐는지 읽어서 확인하고, `validate`를 통과시킨 뒤 녹화한다. 반영을 확인하지 않고 다시 녹화하지 않는다(F3).
