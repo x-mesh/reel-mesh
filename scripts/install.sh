@@ -19,6 +19,7 @@ FORCE=0
 SKIP_BROWSER=0
 TARGETS=""
 SOURCE=""
+DOWNLOAD_DIR=""
 
 info() { printf '\033[0;34m[reel-mesh]\033[0m %s\n' "$1"; }
 ok() { printf '\033[0;32m[reel-mesh]\033[0m %s\n' "$1"; }
@@ -105,12 +106,10 @@ resolve_source() {
   fi
   require curl "Install curl, or run with --source <checkout>."
   require tar "Install tar."
-  local temp
-  temp="$(mktemp -d "${TMPDIR:-/tmp}/reel-mesh-src.XXXXXX")"
   info "Downloading $REPO@$REF..." >&2
-  curl -fsSL "https://codeload.github.com/$REPO/tar.gz/$REF" | tar -xzf - -C "$temp" --strip-components=1 ||
+  curl -fsSL "https://codeload.github.com/$REPO/tar.gz/$REF" | tar -xzf - -C "$DOWNLOAD_DIR" --strip-components=1 ||
     fail "download failed: https://codeload.github.com/$REPO/tar.gz/$REF"
-  printf '%s\n' "$temp"
+  printf '%s\n' "$DOWNLOAD_DIR"
 }
 
 confirm() {
@@ -132,6 +131,9 @@ install_runtime() {
   assert_managed_home
 
   local source staging
+  # resolve_source runs in a subshell, so the download folder is created here where the EXIT trap can remove it.
+  DOWNLOAD_DIR="$(mktemp -d "${TMPDIR:-/tmp}/reel-mesh-src.XXXXXX")"
+  trap 'rm -rf -- "$DOWNLOAD_DIR"' EXIT
   source="$(resolve_source)"
   staging="$(mktemp -d "${TMPDIR:-/tmp}/reel-mesh-home.XXXXXX")"
   info "Copying runtime from $source"
