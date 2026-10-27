@@ -119,5 +119,3 @@ npm run typecheck
 ```
 
 `npm test`는 브라우저를 띄우는 시험을 포함해 순서대로 실행하며, 약 2분 20초가 걸립니다.
-
-요구사항과 설계 배경은 [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md)와 [docs/PLAN.md](docs/PLAN.md)에 있습니다.

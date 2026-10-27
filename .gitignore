@@ -1,5 +1,5 @@
 node_modules/
 .reel/
-.xm/build/
-.xm/traces/
-.xm/last.json
+.xm/
+docs/REQUIREMENTS.md
+docs/PLAN.md
